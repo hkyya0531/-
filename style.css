@@ -33,3 +33,5 @@ body.pool-page{background:#051810}.pool-screen{min-height:100svh;display:flex;ju
 @media(prefers-reduced-motion:reduce){.memory-ending.ending-reveal .memory-photo-frame:after{display:none}.memory-ending.ending-reveal>*{animation:none!important}}
 
 .big-play{display:inline-flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0}.big-play svg{display:block;width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}
+
+.pool-scene .song-bubble{pointer-events:none;cursor:default}
