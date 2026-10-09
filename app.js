@@ -6,7 +6,19 @@ function toast(text){$('#toast').textContent=text;$('#toast').classList.add('sho
 function run(fn){try{fn()}catch(e){toast(e.message)}}
 function go(p){if(p==='home'&&(filter.mode||filter.query||!['','民谣','摇滚','电子'].includes(filter.tag)))filter={mode:'',tag:'',query:''};if(p==='echoes'){meTab='我的回音';p='me'}else if(p==='me'&&meTab==='我的回音'){meTab='已发布'}page=p;modal='';render();window.scrollTo(0,0)}
 function openPost(id){current=id;selectedSong=api.post(id).tracks[0];showStory=false;revealed=true;go('detail')}
-function random(){if(catchBusy)return;const list=api.list(filter).filter(p=>p.id!==current);const pool=list.length?list:api.list(filter);if(!pool.length)return toast('没有匹配的歌单，试试减少筛选条件');const id=pool[Math.floor(Math.random()*pool.length)].id;if(page==='home'||page==='browse')catchWithWater(id);else openPost(id)}
+function pickDiscoveryPost(matches,lastId,rng=Math.random){
+ if(!matches.length)return null;
+ const ordinary=matches.filter(p=>p.mode!=='故事');
+ const stories=matches.filter(p=>p.mode==='故事');
+ const chapters=stories.filter(p=>p.chapterStory);
+ const groups=[ordinary,chapters.length?chapters:stories].filter(g=>g.length);
+ const group=groups[Math.floor(rng()*groups.length)];
+ const alternatives=group.filter(p=>p.id!==lastId);
+ const pool=alternatives.length?alternatives:group;
+ return pool[Math.floor(rng()*pool.length)];
+}
+function random(){if(catchBusy)return;const conditions=page==='home'?{tag:filter.tag||''}:filter;const picked=pickDiscoveryPost(api.list(conditions),current);if(!picked)return toast('没有匹配的歌单，试试减少筛选条件');if(page==='home'||page==='browse')catchWithWater(picked.id);else openPost(picked.id)}
+
 const poolIcons={
  net:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="27" cy="17" rx="13" ry="10" transform="rotate(-35 27 17)"/><path d="M20 25 7 43c-3 3-7-1-4-4l13-16M16 9c-8 1-13 5-11 9 3 5 20 6 32-2 8-5 10-10 7-12"/></svg>',
  send:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="m5 21 37-15-12 36-9-13-16-8Z" fill="currentColor" stroke-linejoin="round"/><path d="M21 29 34 15" stroke="#397862" stroke-width="2"/></svg>',
